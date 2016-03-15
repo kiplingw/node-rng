@@ -1,0 +1,20 @@
+{
+  "name": "rng",
+  "version": "0.1",
+  "description": "module to provide access to a high quality hardware random number generator",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.com:charit.ee/node-rng.git"
+  },
+  "keywords": [
+    "hardware",
+    "random",
+    "number",
+    "generator"
+  ],
+  "author": "Charit.ee Inc. <hello@charit.ee>",
+  "license": "non-free",
+  "homepage": "https://www.charit.ee",
+}
+
