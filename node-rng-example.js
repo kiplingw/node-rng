@@ -4,11 +4,10 @@
 */
 
 // Try to load the module...
-rng = require('./build/Release/rng');
+rng = require('./build/Debug/rng');
 
 // Show the version...
-console.log("Version major: ", rng.getVersionMajor());
-console.log("Version minor: ", rng.getVersionMinor());
+console.log("Version: ", rng.getVersion());
 
 // Verify random number generator is available...
 console.log("Is available?: ", rng.isAvailable());
@@ -28,8 +27,12 @@ for(i = 0; i < 10; ++i)
 
     // Pick some random number within the inclusive range of the previous two,
     //  but asynchronously...
-    rng.getRandomRangeAsync(lower, upper, function(lower, upper, result) {
-        console.log("Asynchronous random number in range (", lower, ",", upper, ") =", result);
+    rng.getRandomRangeAsync(lower, upper, function(err, result) {
+
+        if(err > 0)
+            console.log("Warning: Entropy pool starved or potential hardware problem.");
+
+        console.log("Asynchronous random number =", result);
     });
 }
 
@@ -37,7 +40,11 @@ for(i = 0; i < 10; ++i)
 for(i = 0; i < 10; ++i)
 {
     // Pick some other random number asynchronously...
-    rng.getRandomAsync(function(result) {
+    rng.getRandomAsync(function(err, result) {
+
+        if(err > 0)
+            console.log("Warning: Entropy pool starved or potential hardware problem.");
+
         console.log("Asynchronous random number =", result);
     });
 }

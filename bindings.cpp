@@ -36,14 +36,13 @@
 //  public interface...
 namespace rng
 {
-    // Thread implementing JavaScript's rng.getRandomAsync(function(result)) and
-    //  its corresponding completion function...
+    // Thread implementing JavaScript's rng.getRandomAsync(
+    //  function(error, result)) and its corresponding completion function...
     static void getRandomThread(uv_work_t *Request);
     static void getRandomThreadComplete(uv_work_t *Request, int Status);
 
     // Thread implementing JavaScript's rng.getRandomRangeAsync(lower, upper,
-    //  function(lower, upper, result)) and its corresponding completion
-    //  function...
+    //  function(error, result)) and its corresponding completion function...
     static void getRandomRangeThread(uv_work_t *Request);
     static void getRandomRangeThreadComplete(uv_work_t *Request, int Status);
 }
@@ -61,11 +60,22 @@ void getCorrections(const FunctionCallbackInfo<Value> &Arguments)
     Arguments.GetReturnValue().Set(Generator.GetCorrections());
 }
 
-// Callback implementing JavaScript rng.getRandomAsync(function(result))...
+// Callback implementing JavaScript rng.getRandomAsync(
+//  function(error, result))...
 void getRandomAsync(const FunctionCallbackInfo<Value> &Arguments)
 {
     // Retrieve virtual machine state...
     Isolate *isolate = Arguments.GetIsolate();
+
+    // Random number generator is not available...
+    if(!RandomNumberGenerator::GetInstance().IsAvailable())
+    {
+        // Throw a JavaScript exception within the virtual machine...
+        isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(
+                isolate, "random number generator is not available")));
+        return;
+    }
 
     // Validate arguments...
 
@@ -134,12 +144,15 @@ static void getRandomThreadComplete(uv_work_t *Request, int Status)
     Work<uint32_t> *work = static_cast<Work<uint32_t> *>(Request->data);
 
     // Store the result for the caller...
+    Local<Integer> CallbackCorrectionsParameter = Uint32::NewFromUnsigned(
+        isolate, RandomNumberGenerator::GetInstance().GetCorrections());
     Local<Integer> CallbackResultParameter = Uint32::NewFromUnsigned(isolate, work->Result);
-    Handle<Value> CallbackArguments[] = { CallbackResultParameter };
+    Handle<Value> CallbackArguments[] = {
+        CallbackCorrectionsParameter, CallbackResultParameter };
 
     // Execute the caller's callback...
     Local<Function>::New(isolate, work->Callback)->
-        Call(isolate->GetCurrentContext()->Global(), 1, CallbackArguments);
+        Call(isolate->GetCurrentContext()->Global(), 2, CallbackArguments);
 
     // Cleanup persistent function callback and the worker bookkeeping memory...
     work->Callback.Reset();
@@ -149,19 +162,42 @@ static void getRandomThreadComplete(uv_work_t *Request, int Status)
 // Callback implementing JavaScript rng.getRandom()...
 void getRandom(const FunctionCallbackInfo<Value> &Arguments)
 {
+    // Retrieve virtual machine state...
+    Isolate *isolate = Arguments.GetIsolate();
+
     // Get the random number generator...
     RandomNumberGenerator &Generator = RandomNumberGenerator::GetInstance();
+
+    // Random number generator is not available...
+    if(!Generator.IsAvailable())
+    {
+        // Throw a JavaScript exception within the virtual machine...
+        isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(
+                isolate, "random number generator is not available")));
+        return;
+    }
 
     // Pass random number back to caller...
     Arguments.GetReturnValue().Set(Generator.GetRandom32());
 }
 
-// Callback implementing JavaScript
-//  rng.getRandomRangeAsync(lower, upper, function(lower, upper, result))...
+// Callback implementing JavaScript rng.getRandomRangeAsync(lower, upper,
+//  function(error, result))...
 void getRandomRangeAsync(const FunctionCallbackInfo<Value> &Arguments)
 {
     // Retrieve virtual machine state...
     Isolate *isolate = Arguments.GetIsolate();
+
+    // Random number generator is not available...
+    if(!RandomNumberGenerator::GetInstance().IsAvailable())
+    {
+        // Throw a JavaScript exception within the virtual machine...
+        isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(
+                isolate, "random number generator is not available")));
+        return;
+    }
 
     // Validate arguments...
 
@@ -220,8 +256,8 @@ void getRandomRangeAsync(const FunctionCallbackInfo<Value> &Arguments)
     Arguments.GetReturnValue().Set(Undefined(isolate));
 }
 
-// Thread implementing JavaScript's
-//  rng.getRandomRangeAsync(lower, upper, function(lower, upper, result))...
+// Thread implementing JavaScript's rng.getRandomRangeAsync(lower, upper,
+//  function(error, result))...
 static void getRandomRangeThread(uv_work_t *Request)
 {
     // Retrieve the work object from the heap...
@@ -252,15 +288,15 @@ static void getRandomRangeThreadComplete(uv_work_t *Request, int Status)
     Work<int32_t> *work = static_cast<Work<int32_t> *>(Request->data);
 
     // Store the result for the caller...
-    Local<Integer> CallbackLowerParameter = Int32::New(isolate, work->Lower);
-    Local<Integer> CallbackUpperParameter = Int32::New(isolate, work->Upper);
+    Local<Integer> CallbackCorrectionsParameter = Uint32::NewFromUnsigned(
+        isolate, RandomNumberGenerator::GetInstance().GetCorrections());
     Local<Integer> CallbackResultParameter = Int32::New(isolate, work->Result);
     Handle<Value> CallbackArguments[] = {
-        CallbackLowerParameter, CallbackUpperParameter, CallbackResultParameter };
+        CallbackCorrectionsParameter, CallbackResultParameter };
 
     // Execute the caller's callback...
     Local<Function>::New(isolate, work->Callback)->
-        Call(isolate->GetCurrentContext()->Global(), 3, CallbackArguments);
+        Call(isolate->GetCurrentContext()->Global(), 2, CallbackArguments);
 
     // Cleanup persistent function callback and the worker bookkeeping memory...
     work->Callback.Reset();
@@ -272,6 +308,16 @@ void getRandomRange(const FunctionCallbackInfo<Value> &Arguments)
 {
     // Retrieve virtual machine state...
     Isolate *isolate = Arguments.GetIsolate();
+
+    // Random number generator is not available...
+    if(!RandomNumberGenerator::GetInstance().IsAvailable())
+    {
+        // Throw a JavaScript exception within the virtual machine...
+        isolate->ThrowException(
+            Exception::TypeError(String::NewFromUtf8(
+                isolate, "random number generator is not available")));
+        return;
+    }
 
     // Validate arguments...
 
@@ -313,16 +359,17 @@ void getRandomRange(const FunctionCallbackInfo<Value> &Arguments)
     Arguments.GetReturnValue().Set(Generator.GetRandomRange32(Lower, Upper));
 }
 
-// Callback implementing JavaScript rng.getVersionMajor()...
-void getVersionMajor(const FunctionCallbackInfo<Value> &Arguments)
+// Callback implementing JavaScript rng.getVersion()...
+void getVersion(const FunctionCallbackInfo<Value> &Arguments)
 {
-    Arguments.GetReturnValue().Set(NODE_RNG_VERSION_MAJOR);
-}
+    // Retrieve virtual machine state...
+    Isolate *isolate = Arguments.GetIsolate();
 
-// Callback implementing JavaScript rng.getVersionMinor()...
-void getVersionMinor(const FunctionCallbackInfo<Value> &Arguments)
-{
-    Arguments.GetReturnValue().Set(NODE_RNG_VERSION_MINOR);
+    // Prepare the version as the return value...
+    Local<String> ReturnValue =
+        String::NewFromUtf8(isolate, NODE_RNG_VERSION_STRING);
+
+    Arguments.GetReturnValue().Set(ReturnValue);
 }
 
 // Callback implementing JavaScript rng.isAvailable()...

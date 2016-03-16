@@ -74,6 +74,10 @@ RandomNumberGenerator::RandomNumberGenerator()
 // Retrieve a 32-bit unsigned random number...
 uint32_t RandomNumberGenerator::GetRandom32()
 {
+    // Not supported...
+    if(!IsAvailable())
+        return 0;
+
     // Query for a 64-bit unsigned integer...
     uint64_t Random = GetRandom64();
 
@@ -91,6 +95,10 @@ uint64_t RandomNumberGenerator::GetRandom64()
     // Location for result and carry flag...
     uint64_t    Result  = 0;
     uint8_t     Valid   = false;
+
+    // Not supported...
+    if(!IsAvailable())
+        return 0;
 
     // Keep trying as long as the carry flag indicates a bad result...
     do
@@ -121,6 +129,10 @@ uint64_t RandomNumberGenerator::GetRandom64()
 int32_t RandomNumberGenerator::GetRandomRange32(
     const int32_t Lower, const int32_t Upper)
 {
+    // Not supported...
+    if(!IsAvailable())
+        return 0;
+
     // Calculate the range...
     const uint32_t Range = ::abs(Upper - Lower) + 1;
 

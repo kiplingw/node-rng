@@ -38,19 +38,21 @@ Returns the number of times the hardware detected a poor quality random number
 and corrected it before supplying the client. Repeated non-zero values can
 indicate a problem with the hardware.
 
-### getVersionMajor() / getVersionMinor()
+### getVersion()
 
-Returns the major and minor version of the module as numbers.
+Returns the major, minor, and patch version of the module as a SemVer friendly
+string.
 
 ### getRandom()
 
 Returns an unsigned 32-bit random number in the interval of [0, 4,294,967,295]
 synchronously.
 
-### getRandomAsync(function(result))
+### getRandomAsync(function(error, result))
 
 Calls `function` with an unsigned 32-bit random number in the interval of
-[0, 4,294,967,295] asynchronously.
+[0, 4,294,967,295] asynchronously. The `error` field contains the value as as
+returned from `getCorrections()`.
 
 ### getRandomRange(lower, upper)
 
@@ -58,11 +60,12 @@ Returns a signed 32-bit random number in the interval of ['lower', 'upper']
 synchronously such that `lower` can be a minimum of -2,147,483,648 and `upper` a
 maximum of 2,147,483,647.
 
-### getRandomRangeAsync(lower, upper, function(lower, upper, result))
+### getRandomRangeAsync(lower, upper, function(error, result))
 
 Returns a signed 32-bit random number to `function` asynchronously in the
 interval of ['lower', 'upper'] asynchronously such that `lower` can be a minimum
-of -2,147,483,648 and `upper` a maximum of 2,147,483,647.
+of -2,147,483,648 and `upper` a maximum of 2,147,483,647. The `error` field
+contains the value as as returned from `getCorrections()`.
 
 ## Building
 
@@ -76,7 +79,7 @@ of -2,147,483,648 and `upper` a maximum of 2,147,483,647.
     $ wget https://nodejs.org/dist/v5.8.0/node-v5.8.0.tar.gz
     $ tar xvzf node-v5.8.0.tar.gz
     $ cd node-v5.8.0
-    $ ./configure [--debug] --prefix=$HOME/.local
+    $ ./configure --debug --prefix=$HOME/.local
     $ make && make check && make install
 ```
 

@@ -11,6 +11,8 @@
 // Module version...
 #define NODE_RNG_VERSION_MAJOR  0
 #define NODE_RNG_VERSION_MINOR  1
+#define NODE_RNG_VERSION_PATCH  0
+#define NODE_RNG_VERSION_STRING "0.1.0"
 
 // Module is initializing...
 void OnLoad(v8::Local<v8::Object> Exports);

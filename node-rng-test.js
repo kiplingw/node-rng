@@ -4,7 +4,7 @@
 */
 
 // Try to load the module...
-var rng = require('./build/Release/rng');
+var rng = require('./build/Debug/rng');
 var fs = require('fs');
 
 // Verify random number generator is available...

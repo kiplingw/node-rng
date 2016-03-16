@@ -33,14 +33,13 @@ void OnLoad(Local<Object> Exports)
     RandomNumberGenerator::CreateSingleton();
 
     // Export our JavaScript method callbacks...
-    NODE_SET_METHOD(Exports, "isAvailable",           rng::isAvailable);
-    NODE_SET_METHOD(Exports, "getCorrections",        rng::getCorrections);
-    NODE_SET_METHOD(Exports, "getRandom",             rng::getRandom);
-    NODE_SET_METHOD(Exports, "getRandomAsync",        rng::getRandomAsync);
-    NODE_SET_METHOD(Exports, "getRandomRange",        rng::getRandomRange);
-    NODE_SET_METHOD(Exports, "getRandomRangeAsync",   rng::getRandomRangeAsync);
-    NODE_SET_METHOD(Exports, "getVersionMajor",       rng::getVersionMajor);
-    NODE_SET_METHOD(Exports, "getVersionMinor",       rng::getVersionMinor);
+    NODE_SET_METHOD(Exports, "isAvailable",         rng::isAvailable);
+    NODE_SET_METHOD(Exports, "getCorrections",      rng::getCorrections);
+    NODE_SET_METHOD(Exports, "getRandom",           rng::getRandom);
+    NODE_SET_METHOD(Exports, "getRandomAsync",      rng::getRandomAsync);
+    NODE_SET_METHOD(Exports, "getRandomRange",      rng::getRandomRange);
+    NODE_SET_METHOD(Exports, "getRandomRangeAsync", rng::getRandomRangeAsync);
+    NODE_SET_METHOD(Exports, "getVersion",          rng::getVersion);
 
     // On de-initialization...
     node::AtExit(OnUnload);
