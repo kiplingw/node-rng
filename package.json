@@ -1,6 +1,6 @@
 {
   "name": "rng",
-  "version": "0.1",
+  "version": "0.0.1",
   "description": "module to provide access to a high quality hardware random number generator",
   "main": "index.js",
   "repository": {
@@ -15,6 +15,6 @@
   ],
   "author": "Charit.ee Inc. <hello@charit.ee>",
   "license": "non-free",
-  "homepage": "https://www.charit.ee",
+  "homepage": "https://www.charit.ee"
 }
 
