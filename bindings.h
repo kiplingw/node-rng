@@ -13,7 +13,7 @@
     #include "node-rng.h"
 
     // Standard C++...
-    #include <cstdint>
+    #include <stdint.h>
     #include <vector>
 
 // Work structure for asynchronous calls to be stored on heap...
