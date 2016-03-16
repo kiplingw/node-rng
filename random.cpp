@@ -9,7 +9,7 @@
     #include "random.h"
 
     // Standard C++
-    #include <stdint.h>
+    #include <cstdint>
     #include <cstdlib>
 
 // Using the standard namespace...
