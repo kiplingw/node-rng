@@ -125,7 +125,7 @@ static void getRandomThread(uv_work_t *Request)
 
     // Get the actual random number...
     const uint32_t Random =
-        RandomNumberGenerator::GetInstance().GetRandom32();
+        RandomNumberGenerator::GetInstance().GetRandom32(work->CorrectionDetected);
 
     // Store result for user's callback...
     work->Result = Random;
@@ -143,12 +143,20 @@ static void getRandomThreadComplete(uv_work_t *Request, int Status)
     // Retrieve the work object from the heap...
     Work<uint32_t> *work = static_cast<Work<uint32_t> *>(Request->data);
 
-    // Store the result for the caller...
-    Local<Integer> CallbackCorrectionsParameter = Uint32::NewFromUnsigned(
-        isolate, RandomNumberGenerator::GetInstance().GetCorrections());
-    Local<Integer> CallbackResultParameter = Uint32::NewFromUnsigned(isolate, work->Result);
-    Handle<Value> CallbackArguments[] = {
-        CallbackCorrectionsParameter, CallbackResultParameter };
+    // Store the result for the caller's callback...
+
+        // Storage for arguments into callback...
+        Handle<Value> CallbackArguments[2];
+
+        // Error...
+        if(work->CorrectionDetected)
+            CallbackArguments[0] = Exception::Error(
+                String::NewFromUtf8(isolate, "RNG correction detected"));
+        else
+            CallbackArguments[0] = Null(isolate);
+        
+        // Result...
+        CallbackArguments[1] = Int32::New(isolate, work->Result);
 
     // Execute the caller's callback...
     Local<Function>::New(isolate, work->Callback)->
@@ -179,7 +187,8 @@ void getRandom(const FunctionCallbackInfo<Value> &Arguments)
     }
 
     // Pass random number back to caller...
-    Arguments.GetReturnValue().Set(Generator.GetRandom32());
+    bool CorrectionDetected = false;
+    Arguments.GetReturnValue().Set(Generator.GetRandom32(CorrectionDetected));
 }
 
 // Callback implementing JavaScript rng.getRandomRangeAsync(lower, upper,
@@ -269,7 +278,8 @@ static void getRandomRangeThread(uv_work_t *Request)
 
     // Get the actual random number...
     const int32_t Random =
-        RandomNumberGenerator::GetInstance().GetRandomRange32(Lower, Upper);
+        RandomNumberGenerator::GetInstance().GetRandomRange32(
+            Lower, Upper, work->CorrectionDetected);
 
     // Store result for user's callback...
     work->Result = Random;
@@ -287,12 +297,20 @@ static void getRandomRangeThreadComplete(uv_work_t *Request, int Status)
     // Retrieve the work object from the heap...
     Work<int32_t> *work = static_cast<Work<int32_t> *>(Request->data);
 
-    // Store the result for the caller...
-    Local<Integer> CallbackCorrectionsParameter = Uint32::NewFromUnsigned(
-        isolate, RandomNumberGenerator::GetInstance().GetCorrections());
-    Local<Integer> CallbackResultParameter = Int32::New(isolate, work->Result);
-    Handle<Value> CallbackArguments[] = {
-        CallbackCorrectionsParameter, CallbackResultParameter };
+    // Store the result for the caller's callback...
+
+        // Storage for arguments into callback...
+        Handle<Value> CallbackArguments[2];
+
+        // Error...
+        if(work->CorrectionDetected)
+            CallbackArguments[0] = Exception::Error(
+                String::NewFromUtf8(isolate, "RNG correction detected"));
+        else
+            CallbackArguments[0] = Null(isolate);
+        
+        // Result...
+        CallbackArguments[1] = Int32::New(isolate, work->Result);
 
     // Execute the caller's callback...
     Local<Function>::New(isolate, work->Callback)->
@@ -356,7 +374,9 @@ void getRandomRange(const FunctionCallbackInfo<Value> &Arguments)
     RandomNumberGenerator &Generator = RandomNumberGenerator::GetInstance();
 
     // Pass random number back to caller...
-    Arguments.GetReturnValue().Set(Generator.GetRandomRange32(Lower, Upper));
+    bool CorrectionDetected = false;
+    Arguments.GetReturnValue().Set(Generator.GetRandomRange32(
+        Lower, Upper, CorrectionDetected));
 }
 
 // Callback implementing JavaScript rng.getVersion()...

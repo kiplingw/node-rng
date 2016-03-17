@@ -1,6 +1,6 @@
 {
   "name": "rng",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "module to provide access to a high quality hardware random number generator",
   "main": "index.js",
   "repository": {

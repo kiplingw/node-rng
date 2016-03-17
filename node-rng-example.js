@@ -29,8 +29,8 @@ for(i = 0; i < 10; ++i)
     //  but asynchronously...
     rng.getRandomRangeAsync(lower, upper, function(err, result) {
 
-        if(err > 0)
-            console.log("Warning: Entropy pool starved or potential hardware problem.");
+        if(err)
+            console.log(err);
 
         console.log("Asynchronous random number =", result);
     });
@@ -42,8 +42,8 @@ for(i = 0; i < 10; ++i)
     // Pick some other random number asynchronously...
     rng.getRandomAsync(function(err, result) {
 
-        if(err > 0)
-            console.log("Warning: Entropy pool starved or potential hardware problem.");
+        if(err)
+            console.log(err);
 
         console.log("Asynchronous random number =", result);
     });

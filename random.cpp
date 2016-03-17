@@ -76,14 +76,17 @@ RandomNumberGenerator::RandomNumberGenerator()
 }
 
 // Retrieve a 32-bit unsigned random number...
-uint32_t RandomNumberGenerator::GetRandom32()
+uint32_t RandomNumberGenerator::GetRandom32(bool &CorrectionDetected)
 {
+    // Reset correction flag...
+    CorrectionDetected = false;
+
     // Not supported...
     if(!IsAvailable())
         return 0;
 
     // Query for a 64-bit unsigned integer...
-    uint64_t Random = GetRandom64();
+    uint64_t Random = GetRandom64(CorrectionDetected);
 
     // Split into two words...
     //uint32_t High   = static_cast<uint32_t>(Random >> 32U);
@@ -94,11 +97,14 @@ uint32_t RandomNumberGenerator::GetRandom32()
 }
 
 // Retrieve a 64-bit unsigned random number...
-uint64_t RandomNumberGenerator::GetRandom64()
+uint64_t RandomNumberGenerator::GetRandom64(bool &CorrectionDetected)
 {
     // Location for result and carry flag...
     uint64_t    Result  = 0;
     uint8_t     Valid   = false;
+
+    // Reset correction flag...
+    CorrectionDetected = false;
 
     // Not supported...
     if(!IsAvailable())
@@ -118,6 +124,7 @@ uint64_t RandomNumberGenerator::GetRandom64()
         // Remember failed attempts...
         if(!Valid)
         {
+            CorrectionDetected = true;
           ::uv_mutex_lock(&m_Mutex);
           ++m_Corrections;
           ::uv_mutex_unlock(&m_Mutex);
@@ -131,7 +138,7 @@ uint64_t RandomNumberGenerator::GetRandom64()
 
 // Retrieve a 32-bit random number within the given inclusive range...
 int32_t RandomNumberGenerator::GetRandomRange32(
-    const int32_t Lower, const int32_t Upper)
+    const int32_t Lower, const int32_t Upper, bool &CorrectionDetected)
 {
     // Not supported...
     if(!IsAvailable())
@@ -141,7 +148,7 @@ int32_t RandomNumberGenerator::GetRandomRange32(
     const uint32_t Range = ::abs(Upper - Lower) + 1;
 
     // Get a random number...
-    const uint32_t Random = GetRandom32();
+    const uint32_t Random = GetRandom32(CorrectionDetected);
 
     // Scale and return within the inclusive range...
     return static_cast<int32_t>((Random % Range) + (Lower));

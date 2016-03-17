@@ -51,8 +51,9 @@ synchronously.
 ### getRandomAsync(function(error, result))
 
 Calls `function` with an unsigned 32-bit random number in the interval of
-[0, 4,294,967,295] asynchronously. The `error` field contains the value as as
-returned from `getCorrections()`.
+[0, 4,294,967,295] asynchronously. The `error` field is `null` if no correction
+was necessary before supplying a valid random number. Otherwise it will contain
+an error exception.
 
 ### getRandomRange(lower, upper)
 
@@ -64,8 +65,9 @@ maximum of 2,147,483,647.
 
 Returns a signed 32-bit random number to `function` asynchronously in the
 interval of ['lower', 'upper'] asynchronously such that `lower` can be a minimum
-of -2,147,483,648 and `upper` a maximum of 2,147,483,647. The `error` field
-contains the value as as returned from `getCorrections()`.
+of -2,147,483,648 and `upper` a maximum of 2,147,483,647. The `error` field is
+`null` if no correction was necessary before supplying a valid random number.
+Otherwise it will contain an error exception.
 
 ## Building
 

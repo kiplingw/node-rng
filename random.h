@@ -29,13 +29,14 @@ class RandomNumberGenerator : public ExplicitSingleton<RandomNumberGenerator>
         uint32_t GetCorrections() const { return m_Corrections; }
 
         // Retrieve a 32-bit unsigned random number...
-        uint32_t GetRandom32();
+        uint32_t GetRandom32(bool &CorrectionDetected);
 
         // Retrieve a 64-bit unsigned random number...
-        uint64_t GetRandom64();
+        uint64_t GetRandom64(bool &CorrectionDetected);
 
         // Retrieve a 32-bit random number within the given inclusive range...
-        int32_t GetRandomRange32(const int32_t Lower, const int32_t Upper);
+        int32_t GetRandomRange32(
+            const int32_t Lower, const int32_t Upper, bool &CorrectionDetected);
 
         // Check if a random number generator is available...
         bool IsAvailable() const;
