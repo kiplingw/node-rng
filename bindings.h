@@ -13,7 +13,11 @@
     #include "node-rng.h"
 
     // Standard C++...
+#ifdef __APPLE__
+    #include <tr1/cstdint>
+#else
     #include <cstdint>
+#endif
     #include <vector>
 
 // Work structure for asynchronous calls to be stored on heap...

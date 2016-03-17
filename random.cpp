@@ -9,7 +9,11 @@
     #include "random.h"
 
     // Standard C++
+#ifdef __APPLE__
+    #include <tr1/cstdint>
+#else
     #include <cstdint>
+#endif
     #include <cstdlib>
 
 // Using the standard namespace...
