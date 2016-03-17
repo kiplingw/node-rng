@@ -20,13 +20,14 @@
 template <typename ResultType_t>
 struct Work
 {
-    Work() : Lower(0), Upper(0), Result(0) {}
+    Work() : Lower(0), Upper(0), CorrectionDetected(false), Result(0) {}
 
     uv_work_t Request;
     v8::Persistent<v8::Function> Callback;
 
     int32_t         Lower;
     int32_t         Upper;
+    bool            CorrectionDetected;
     ResultType_t    Result;
 };
 
