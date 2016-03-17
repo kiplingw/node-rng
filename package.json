@@ -1,5 +1,5 @@
 {
-  "name": "rng",
+  "name": "@charitee/rng",
   "version": "0.1.1",
   "description": "module to provide access to a high quality hardware random number generator",
   "main": "index.js",
@@ -19,8 +19,5 @@
     "index.js",
     "package.json",
     "build/Release/rng.node"
-  ],
-  "publishConfig": {
-    "registry": "https://registry.local"
-  }
+  ]
 }
