@@ -21,7 +21,10 @@
     "build/Release/rng.node"
   ],
   "scripts": {
-      "install": "env true"
+    "install": "env true"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "publishConfig": {
+    "registry": "https://npm.app.charit.ee/"
+  }
 }
